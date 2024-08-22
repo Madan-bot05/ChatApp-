@@ -2,6 +2,7 @@
 import { initializeApp } from "firebase/app";
 import { createUserWithEmailAndPassword, getAuth } from "firebase/auth";
 import { doc, getFirestore, setDoc } from "firebase/firestore";
+import { toast } from "react-toastify";
 
 
 const firebaseConfig = {
@@ -36,7 +37,9 @@ const signUp=async(username,email,password)=>{
             chatData:[]
         })
     } catch (error) {
-        
+        console.log(error)
+        toast.error(error.code)
     }
-
 }
+
+export {signUp}
