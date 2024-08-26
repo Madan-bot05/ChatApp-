@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import "./Login.css";
 import assets from "../../assets/assets";
-import { signUp } from "../../config/fireBase";
+import { login, signUp } from "../../config/fireBase";
 
 export const Login = () => {
 
@@ -14,8 +14,13 @@ export const Login = () => {
     event.preventDefault();
     if(currentState==="Sign up"){
       signUp(userName,email,password);
+      console.log(userName,email,password)
     }
-    console.log(userName,email,password)
+    if(currentState==="Login"){
+      login(email,password);
+      console.log(email,password)
+    }
+    
   }
 
 

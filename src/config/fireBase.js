@@ -1,6 +1,6 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
-import { createUserWithEmailAndPassword, getAuth } from "firebase/auth";
+import { createUserWithEmailAndPassword, getAuth, signInWithEmailAndPassword, signOut } from "firebase/auth";
 import { doc, getFirestore, setDoc } from "firebase/firestore";
 import { toast } from "react-toastify";
 
@@ -36,10 +36,31 @@ const signUp=async(username,email,password)=>{
         await setDoc(doc(db,"chats",user.uid),{
             chatData:[]
         })
+        toast.success
     } catch (error) {
         console.log(error)
+        toast.error(error.code);
+    }
+}
+
+const login = async(email,password)=>{
+    try {
+        await signInWithEmailAndPassword(auth,email,password)
+        toast.success("Login sucessfull")
+    } catch (error) {
+        console.log(error);
         toast.error(error.code)
     }
 }
 
-export {signUp}
+const logout=async()=>{
+    try {
+        await signOut(auth)
+        toast.success("Logged Out")
+    } catch (error) {
+        // toast.error(error.code)
+    }
+    
+}
+
+export {signUp,login,logout,auth,db}
