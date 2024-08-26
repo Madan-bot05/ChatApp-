@@ -17,6 +17,7 @@ const App = () => {
     onAuthStateChanged(auth,async (user) => {
       if(user){
         navigate('/chat')
+        console.log(user)
       }else{
         navigate('/')
         toast.error('Please login first')
