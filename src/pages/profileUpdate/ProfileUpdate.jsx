@@ -3,9 +3,10 @@ import './ProfileUpdate.css'
 import assets from "../../assets/assets";
 import { onAuthStateChanged } from 'firebase/auth';
 import { auth ,db} from '../../config/fireBase';
-import { doc, getDoc } from 'firebase/firestore';
+import { doc, getDoc, updateDoc } from 'firebase/firestore';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
+import upload from '../../lib/upload';
 
 const ProfileUpdate = () => {
 
@@ -17,42 +18,66 @@ const ProfileUpdate = () => {
   const [bio,setBio]=useState("")
   const [uid,setUid]=useState("")
   const [prevImage,setPrevImage]=useState("")
-
-  const profileUpdate=async(event)=>{
+  const profileUpdate = async (event) => {
     event.preventDefault();
     try {
-      if(!prevImage && !image){ toast.error("Please select an image") }
-      const docRef=doc(db,"users",uid)
-
-      if(image){}
-      else{}
-
+      if (!prevImage && !image) {
+        toast.error("Please select an image");
+        return; // Prevent further execution
+      }
+  
+      const docRef = doc(db, "users", uid);
+  
+      if (image) {
+        const imgUrl = await upload(image);
+        setPrevImage(imgUrl);
+        await updateDoc(docRef, {
+          avatar: imgUrl,
+          bio: bio,
+          name: name,
+        });
+      } else {
+        await updateDoc(docRef, {
+          bio: bio,
+          name: name,
+        });
+      }
+  
+      toast.success("Profile updated successfully");
     } catch (error) {
-      
+      console.error("Error updating profile:", error);
+      toast.error("Failed to update profile");
     }
-  }
+  };
+  
 
-  useEffect(()=>{
-    onAuthStateChanged(auth,async(user)=>{
-      if(user){
-        setUid(user.uid)
-        const docRef=doc(db,"users",user.uid)
-        const docSnap=getDoc(docRef)
-        if((await docSnap).data().name){
-          setName((await docSnap).data().name)
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, async (user) => {
+      if (user) {
+        setUid(user.uid);
+        const docRef = doc(db, "users", user.uid);
+        const docSnap = await getDoc(docRef);
+  
+        if (docSnap.exists()) {
+          const data = docSnap.data();
+          if (data.name) {
+            setName(data.name);
+          }
+          if (data.bio) {
+            setBio(data.bio);  // Set bio instead of name
+          }
+          if (data.avatar) {
+            setPrevImage(data.avatar);
+          }
         }
-        if((await docSnap).data().bio){
-          setName((await docSnap).data().bio)
+      } else {
+        navigate('/');
       }
-        if((await docSnap).data().avatar){
-          setPrevImage((await docSnap).data().avatar)
-      }
-    }
-    else{
-      navigate('/')
-    }
-  })
-  })
+    });
+  
+    return () => unsubscribe();
+  }, [auth, navigate]);
+  
 
 
 
