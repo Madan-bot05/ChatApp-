@@ -2,7 +2,7 @@ import React from "react";
 import "./LeftSideBar.css";
 import assets from "../../assets/assets";
 import { useNavigate } from "react-router-dom";
-import { collection, query, where } from "firebase/firestore";
+import { collection, getDocs, query, where } from "firebase/firestore";
 import { db } from "../../config/fireBase";
 const LeftsideBar = () => {
 

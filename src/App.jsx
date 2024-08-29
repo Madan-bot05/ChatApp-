@@ -10,6 +10,7 @@ import { onAuthStateChanged } from 'firebase/auth'
 import { auth } from './config/fireBase'
 import { AppContext } from './context/AppContext'
 
+
 const App = () => {
 
   const navigate=useNavigate();
